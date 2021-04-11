@@ -1,25 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from 'react'
+import PersonForm from './components/PersonForm'
+import ShowDetail from './components/Details'
+import dataServices from './services/data'
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const App = () =>{
+    const [ persons, setPersons ] = useState([])
+    const [ status, setStatus ] = useState(true)
+    const [currentId, setId] = useState(0)
+    useEffect(() =>{
+        dataServices
+            .getAll()
+            .then(initial_data => {
+            setPersons(initial_data)
+            })
+        }, [])     
+    const details = (event) =>{
+        event.preventDefault()
+        setStatus(false)
+        setId(event.target.id)
+    }
+    const select = (elem) =>{
+            return(elem.id === parseInt(currentId))
+        }      
+    const selected = persons.filter(select)
+    if (status){
+        return(
+            <div>
+                <PersonForm person = {persons} show = {details}  />
+            </div>
+    )}
+    else{
+        return(
+            <div>
+                <ShowDetail data = {selected}/>
+            </div>
+        )}
 }
-
-export default App;
+export default App
